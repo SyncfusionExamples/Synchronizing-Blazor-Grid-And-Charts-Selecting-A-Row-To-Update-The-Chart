@@ -1,0 +1,193 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+@using Syncfusion.Blazor.Charts
+@using Syncfusion.Blazor.Grids
+
+<div class="row">
+    <div class="col-md-6">
+        <SfGrid DataSource="@GridDataSource" SelectedRowIndex="0">
+            <GridEvents RowSelected="RowSelectHandler" TValue="ContinentData"></GridEvents>
+            <GridColumns>
+                <GridColumn Field=@nameof(ContinentData.Continent) HeaderText="Continent"></GridColumn>
+                <GridColumn Field=@nameof(ContinentData.TotalPopulation) HeaderText="Total Population">
+                    <Template>
+                        @{
+                            var population = context as ContinentData;
+                            if (population != null)
+                            {
+                                @FormatNumber(population.TotalPopulation);
+                            }
+                        }
+                    </Template>
+                </GridColumn>
+            </GridColumns>
+        </SfGrid>
+    </div>
+    <div class="col-md-6">
+        <SfChart Title="World Population by Continent and Country (2025)" SubTitle="(Estimated)" UseGroupingSeparator="true" Theme="Syncfusion.Blazor.Theme.Tailwind3">
+            <ChartArea><ChartAreaBorder Width="0"></ChartAreaBorder></ChartArea>
+            <ChartEvents OnDataLabelRender="DataLabelRender" OnAxisLabelRender="AxisLabelEvent"></ChartEvents>
+            <ChartPrimaryXAxis LabelFormat="MMM" ValueType="Syncfusion.Blazor.Charts.ValueType.Category" Title="Country">
+                <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+                <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
+            </ChartPrimaryXAxis>
+            <ChartPrimaryYAxis Title="Population">
+                <ChartAxisLineStyle Width="0"></ChartAxisLineStyle>
+                <ChartAxisMajorTickLines Width="0"></ChartAxisMajorTickLines>
+                <ChartAxisMinorTickLines Width="0"></ChartAxisMinorTickLines>
+            </ChartPrimaryYAxis>
+            <ChartSeriesCollection>
+                <ChartSeries DataSource="@ChartDataSource" XName="Country" YName="Population" Width=2 Type="Syncfusion.Blazor.Charts.ChartSeriesType.Column"
+                CornerRadius="@(new ChartCornerRadius { TopLeft= 3, BottomLeft= 3, BottomRight= 3, TopRight= 3})">
+                    <ChartMarker>
+                        <ChartDataLabel Visible="true">
+                            <ChartDataLabelFont Size="12px"></ChartDataLabelFont>
+                        </ChartDataLabel>
+                    </ChartMarker>
+                </ChartSeries>
+            </ChartSeriesCollection>
+            <ChartTooltipSettings Enable="true"></ChartTooltipSettings>
+        </SfChart>
+    </div>
+</div>
+
+@code {
+    public List<ChartData> ChartDataSource { get; set; } = new List<ChartData>();
+    public List<ContinentData> GridDataSource { get; set; } = new List<ContinentData>();
+    private Dictionary<string, List<ChartData>> PopulationData = new Dictionary<string, List<ChartData>>();
+
+    protected override void OnInitialized()
+    {
+        LoadStaticData();
+    }
+
+    private void LoadStaticData()
+    {
+        var populationByContinent = new Dictionary<string, List<ChartData>>
+        {
+            { "Asia", new List<ChartData>
+                {
+                    new ChartData("China", 1416096094),
+                    new ChartData("India", 1463865525),
+                    new ChartData("Indonesia", 285721236),
+                    new ChartData("Pakistan", 255219554),
+                    new ChartData("Bangladesh", 175686899)
+                }
+            },
+            { "Africa", new List<ChartData>
+                {
+                    new ChartData("Nigeria", 237527782),
+                    new ChartData("Ethiopia", 135472051),
+                    new ChartData("Egypt", 118365995),
+                    new ChartData("DR Congo", 112832473),
+                    new ChartData("South Africa", 64747319)
+                }
+            },
+            { "Europe", new List<ChartData>
+                {
+                    new ChartData("Russia", 143997393),
+                    new ChartData("Germany", 84075075),
+                    new ChartData("United Kingdom", 69551332),
+                    new ChartData("France", 66650804),
+                    new ChartData("Italy", 59146260)
+                }
+            },
+            { "North America", new List<ChartData>
+                {
+                    new ChartData("United States", 347275807),
+                    new ChartData("Mexico", 131946900),
+                    new ChartData("Canada", 40126723),
+                    new ChartData("Guatemala", 18687881),
+                    new ChartData("Cuba", 10937203)
+                }
+            },
+            { "South America", new List<ChartData>
+                {
+                    new ChartData("Brazil", 212812405),
+                    new ChartData("Argentina", 45851378),
+                    new ChartData("Colombia", 53425635),
+                    new ChartData("Peru", 34576665),
+                    new ChartData("Venezuela", 28516896)
+                }
+            },
+            { "Oceania", new List<ChartData>
+                {
+                    new ChartData("Australia", 26974026),
+                    new ChartData("Papua New Guinea", 10762817),
+                    new ChartData("New Zealand", 5251899),
+                    new ChartData("Fiji", 933154),
+                    new ChartData("Solomon Islands", 838645)
+                }
+            }
+        };
+
+        foreach (var item in populationByContinent)
+        {
+            double totalPopulation = item.Value.Sum(c => c.Population);
+            GridDataSource.Add(new ContinentData { Continent = item.Key, TotalPopulation = Math.Round(totalPopulation, 2) });
+            PopulationData[item.Key] = item.Value;
+        }
+    }
+
+    public void RowSelectHandler(Syncfusion.Blazor.Grids.RowSelectEventArgs<ContinentData> args)
+    {
+        if (PopulationData.ContainsKey(args.Data.Continent))
+        {
+            ChartDataSource = new List<ChartData>(PopulationData[args.Data.Continent]);
+            StateHasChanged();
+        }
+    }
+
+    public void AxisLabelEvent(AxisLabelRenderEventArgs args)
+    {
+        if (args.Axis.Name == "PrimaryYAxis")
+        {
+            double value;
+            if (double.TryParse(args.Text, out value))
+            {
+                args.Text = FormatNumber(value);
+            }
+        }
+    }
+
+    public void DataLabelRender(TextRenderEventArgs args)
+    {
+        double value;
+        if (double.TryParse(args.Text, out value))
+        {
+            args.Text = FormatNumber(value);
+        }
+    }
+
+    private string FormatNumber(double num)
+    {
+        if (num >= 1_000_000_000)
+            return (num / 1_000_000_000).ToString("0.#") + " B";
+        else if (num >= 1_000_000)
+            return (num / 1_000_000).ToString("0.#") + " M";
+        else if (num >= 1_000)
+            return (num / 1_000).ToString("0.#") + " K";
+        else
+            return num.ToString("0");
+    }
+
+    public class ChartData
+    {
+        public string Country { get; set; }
+        public double Population { get; set; }
+
+        public ChartData(string country, double population)
+        {
+            Country = country;
+            Population = population;
+        }
+    }
+
+    public class ContinentData
+    {
+        public string Continent { get; set; }
+        public double TotalPopulation { get; set; }
+    }
+}
