@@ -1,6 +1,6 @@
 # Synchronizing Blazor Grid and Charts
 
-This repository demonstrates how to build an interactive data dashboard by synchronizing a Blazor Grid with a Chart component. Select any continent in the grid to dynamically view its corresponding population data visualization in real-time.
+This repository demonstrates how to build an interactive data dashboard by synchronizing a [Blazor Grid](https://www.syncfusion.com/blazor-components/blazor-datagrid) with a Chart component. Select any continent in the grid to dynamically view its corresponding population data visualization in real-time.
 
 ## Overview
 
@@ -15,7 +15,7 @@ Modern data applications require seamless interaction between multiple component
 
 -  **Synchronized Components** - Grid selection instantly updates the chart
 -  **Column Chart Visualization** - Displays country populations with data labels
--  **Real-world Dataset** - World population data by continent (2025 estimates)
+-  **Real-world Dataset** - World population data by continent
 -  **Smart Formatting** - Automatic conversion to B/M/K notation for large numbers
 -  **Interactive UI** - Hover tooltips and responsive design
 -  **Tailwind Theme** - Modern styling with Tailwind CSS 3
@@ -52,24 +52,8 @@ dotnet restore
 dotnet run
 ```
 
-## How it works
-
-The application implements a simple yet effective pattern for component synchronization:
-
-1. **Grid Component** displays continents with their total population
-2. **User clicks a grid row** triggering the `RowSelectHandler` event
-3. **Event handler updates** the chart data source based on selected continent
-4. **Chart re-renders** showing the top 5 countries for that continent
-5. **Data formatting** displays values in B/M/K notation for better readability
-
-### Key Components
-
-- `Home.razor` - Main page containing both Grid and Chart components
-- `ChartData` class - Model for chart data (Country, Population)
-- `ContinentData` class - Model for grid data (Continent, Total Population)
-- `PopulationData` dictionary - Maps continents to their countries' data
-
 ## References
 
-- [Blazor Event Handling](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/event-handling)
-- [Blazor Data Binding](https://learn.microsoft.com/en-us/aspnet/core/blazor/components/data-binding)
+- Blazor Synchronized chart Documentation: https://blazor.syncfusion.com/documentation/chart/how-to/synchronized-chart
+- Blazor DataGrid Documentation: https://blazor.syncfusion.com/documentation/datagrid/getting-started
+- Blazor Chart Data Binding: https://blazor.syncfusion.com/documentation/chart/working-with-data
