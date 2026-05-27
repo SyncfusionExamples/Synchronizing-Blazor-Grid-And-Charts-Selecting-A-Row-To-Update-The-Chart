@@ -1,6 +1,6 @@
 # Synchronizing Blazor Grid and Charts
 
-This repository demonstrates how to build an interactive data dashboard by synchronizing a [Blazor Grid](https://www.syncfusion.com/blazor-components/blazor-datagrid) with a Chart component. Select any continent in the grid to dynamically view its corresponding population data visualization in real-time.
+This repository demonstrates how to build an interactive data dashboard by synchronizing a [Blazor Grid](https://www.syncfusion.com/blazor-components/blazor-datagrid) with a [Charts](https://www.syncfusion.com/blazor-components/blazor-charts) component. Select any continent in the grid to dynamically view its corresponding population data visualization in real-time.
 
 ## Overview
 
